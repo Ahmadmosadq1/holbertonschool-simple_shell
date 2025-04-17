@@ -7,7 +7,6 @@
  */
 
 extern char **environ;
-
 int main(int argc, char **argv, char **environ)
 {
 	int status;
