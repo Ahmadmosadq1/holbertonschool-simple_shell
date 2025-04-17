@@ -51,7 +51,7 @@ if (pid == 0)
 if (pid > 0)
 {
 	wait(&status);
-	free(line_cpy);
+	/*free(line_cpy);*/
 }
 }
 free(line);
