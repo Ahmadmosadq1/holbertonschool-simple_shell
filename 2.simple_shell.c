@@ -15,6 +15,7 @@ int main(int argc, char **argv, char **environ)
 	pid_t pid;
 	char *line_cpy;
 	char *arguments[2];
+	char *clean;
 
 	(void)argc;
 	(void)argv;
@@ -30,7 +31,9 @@ int main(int argc, char **argv, char **environ)
 	printf("\n");
 	break;
 }
-line_cpy = _strncpy(line);/*using strencpy to eleminate \n*/
+clean = trim_spaces(line);
+line_cpy = _strncpy(clean);
+free(clean);
 if (line_cpy[0] == '\0')
 {
 	free(line_cpy);

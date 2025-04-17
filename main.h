@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 char *_strncpy(char *line);
 extern char **environ;
+char *trim_spaces(char *str);
 
 #endif
 
