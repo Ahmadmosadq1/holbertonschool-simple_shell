@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 		printf("$ "); /*printing our prompt symbol1*/
 		user_input = getline(&line, &len,stdin);/*reading command lines form the user*/
 		if (user_input == -1)
-		}
+		{
 	printf("\n");
 	break;
 }
