@@ -5,7 +5,10 @@
  *.
  * Return: void.
  */
-int main(int argc, char **argv)
+
+extern char **environ;
+
+int main(int argc, char **argv, char **environ)
 {
 	int status;
 	size_t len = 0;
@@ -14,7 +17,7 @@ int main(int argc, char **argv)
 	pid_t pid;
 	char *line_cpy;
 	char *arguments[2];
-	
+
 	(void)argc;
 	(void)argv;
 	while (1) /*making an infinte loop for our shell*/
@@ -45,14 +48,14 @@ if (pid == 0)
 	arguments[0] = line_cpy;
 	arguments[1] = NULL;
 	printf("Running: %s\n", line_cpy);
-	execv(line_cpy, arguments);
+	execve(line_cpy, arguments, environ);
 	perror("execvp");
     exit(EXIT_FAILURE);
 }
 if (pid > 0)
 {
 	wait(&status);
-	/*free(line_cpy);*/
+	free(line_cpy);
 }
 }
 free(line);
