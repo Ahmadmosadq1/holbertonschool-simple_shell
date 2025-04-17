@@ -21,7 +21,6 @@ int main(int argc, char **argv, char **environ)
 	(void)argv;
 	while (1) /*making an infinte loop for our shell*/
 	{
-		if (isatty(STDIN_FILENO))
 			printf("$ "); /*printing our prompt symbol1*/
 		user_input = getline(&line, &len,stdin);/*reading command lines form the user*/
 		if (user_input == -1)
