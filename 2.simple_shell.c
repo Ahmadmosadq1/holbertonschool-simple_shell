@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	while (1) /*making an infinte loop for our shell*/
 	{
 		if (isatty(STDIN_FILENO))
-			printf("$"); /*printing our prompt symbol1*/
+			printf("$ "); /*printing our prompt symbol1*/
 		user_input = getline(&line, &len,stdin);/*reading command lines form the user*/
 		if (user_input == -1)
 		{
@@ -44,6 +44,7 @@ if (pid == 0)
 {
 	arguments[0] = line_cpy;
 	arguments[1] = NULL;
+	printf("Running: %s\n", line_cpy);
 	execv(line_cpy, arguments);
 	perror("execvp");
     exit(EXIT_FAILURE);
