@@ -46,7 +46,6 @@ if (pid == 0)
 {
 	arguments[0] = line_cpy;
 	arguments[1] = NULL;
-	printf("Running: %s\n", line_cpy);
 	execve(line_cpy, arguments, environ);
 	perror("execvp");
     exit(EXIT_FAILURE);
