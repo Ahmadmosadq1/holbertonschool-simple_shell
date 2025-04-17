@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 	int status;
 	size_t len = 0;
 	ssize_t user_input;
-	char *line;
+	char *line = NULL;
 	pid_t pid;
 	char *line_cpy;
 	char *arguments[2];
@@ -36,6 +36,7 @@ pid = fork();
 if (pid == -1)
 {
 	perror("fork");
+	free(line_cpy);
 	exit(EXIT_FAILURE);
 }
 if (pid == 0)
