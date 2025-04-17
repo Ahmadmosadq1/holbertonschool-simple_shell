@@ -8,6 +8,7 @@
 #include <string.h>
 #include <sys/wait.h>
 char *_strncpy(char *line);
+extern char **environ;
 
 #endif
 
