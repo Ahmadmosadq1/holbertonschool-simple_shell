@@ -26,6 +26,7 @@ int main(int argc, char **argv, char **environ)
 		user_input = getline(&line, &len,stdin);/*reading command lines form the user*/
 		if (user_input == -1)
 		{
+			if (isatty(STDIN_FILENO))
 	printf("\n");
 	break;
 }
