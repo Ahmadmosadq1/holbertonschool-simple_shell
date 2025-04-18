@@ -9,6 +9,7 @@
 int main(int argc, char **argv, char **environ)
 {
 	int status;
+	int index = 0;
 	size_t len = 0;
 	ssize_t user_input;
 	char *line = NULL;
@@ -16,6 +17,7 @@ int main(int argc, char **argv, char **environ)
 	char *line_cpy;
 	char *arguments[2];
 	char *clean;
+	char *token;
 
 	(void)argc;
 	(void)argv;
@@ -45,14 +47,19 @@ if (line_cpy[0] == '\0')
 pid = fork();
 if (pid == -1)
 {
+	token = strtok(line_cpy, " ");
+	while (token != NULL)
+	{
+		arguments[index++] = token;
+		token = strtok(NULL, " ");
+	}
 	perror("fork");
 	free(line_cpy);
 	exit(EXIT_FAILURE);
 }
 if (pid == 0)
 {
-	arguments[0] = line_cpy;
-	arguments[1] = NULL;
+	
 	execve(line_cpy, arguments, environ);
 	perror("execvp");
     exit(EXIT_FAILURE);
