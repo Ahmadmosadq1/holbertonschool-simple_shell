@@ -47,20 +47,20 @@ if (line_cpy[0] == '\0')
 pid = fork();
 if (pid == -1)
 {
-	token = strtok(line_cpy, " ");
-	while (token != NULL)
-	{
-		arguments[index++] = token;
-		token = strtok(NULL, " ");
-	}
 	perror("fork");
 	free(line_cpy);
 	exit(EXIT_FAILURE);
 }
 if (pid == 0)
 {
-	
-	execve(line_cpy, arguments, environ);
+	token = strtok(line_cpy, " ");
+	while (token != NULL)
+	{
+		arguments[index++] = token;
+		token = strtok(NULL, " ");
+	}
+	arguments[index] = NULL;
+        execve(line_cpy, arguments, environ);
 	perror("execvp");
     exit(EXIT_FAILURE);
 }
