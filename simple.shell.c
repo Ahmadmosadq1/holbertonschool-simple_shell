@@ -18,6 +18,7 @@ int main(int argc, char **argv, char **environ)
 	char *arguments[2];
 	char *clean;
 	char *token;
+	char *PATH;
 
 	(void)argc;
 	(void)argv;
@@ -44,6 +45,13 @@ if (line_cpy[0] == '\0')
 	free(line_cpy);
 	continue;
 }
+PATH_str = getevn("PATH"); 
+PATH = strtok(PATH_str, ":");
+if (access(PATH, X_OK) != 0)
+{
+	perror("command: ");
+	return (-1);
+}
 pid = fork();
 if (pid == -1)
 {
@@ -60,7 +68,7 @@ if (pid == 0)
 		token = strtok(NULL, " ");
 	}
 	arguments[index] = NULL;
-        execve(line_cpy, arguments, environ);
+        execve(PATH, arguments, environ);
 	perror("execvp");
     exit(EXIT_FAILURE);
 }
