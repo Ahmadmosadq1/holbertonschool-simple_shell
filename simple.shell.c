@@ -72,6 +72,11 @@ int main(int argc, char **argv, char **environ)
 				Path = strtok(Path_copy, ":");
 				while (Path)
 				{
+					if (Path[0] == '\0')
+					{
+						Path = strtok(NULL, ":");
+						continue;
+					}
 					Path_token = malloc(strlen(Path) + strlen(cmd) + 2);
 					if (!Path_token)
 						break;
