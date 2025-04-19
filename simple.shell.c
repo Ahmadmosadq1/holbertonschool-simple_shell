@@ -41,7 +41,10 @@ int main(int argc, char **argv, char **environ)
 		clean = trim_spaces(line);
 		line_cpy = malloc(sizeof(char) * strlen(clean) + 1);
 		if (line_cpy == NULL)
-			return (-1);
+		{
+			free(clean);
+    			continue;
+		}
 		strncpy(line_cpy, clean, strlen(clean) + 1);
 		free(clean);
 		if (line_cpy[0] == '\0')
@@ -64,7 +67,11 @@ int main(int argc, char **argv, char **environ)
 		{
 			Path_token = malloc(strlen(Path) + strlen(line_cpy) + 2);
 			if (Path_token == NULL)
-				return (-1);
+			{
+				 free(Path_copy);
+    				free(line_cpy);
+   			 continue;
+			}
 			sprintf(Path_token, "%s/%s", Path, line_cpy);
 			 if (access(Path_token, X_OK) == 0)
 				 break;
@@ -73,7 +80,6 @@ int main(int argc, char **argv, char **environ)
 		if (Path_token == NULL)
                          {
                                  perror("command :");
-				 free(line_cpy);
                                  continue;
                          }
 		pid = fork();
@@ -81,6 +87,7 @@ int main(int argc, char **argv, char **environ)
 		{
 			perror("fork");
 			free(Path_token);
+			free(Path_copy);
 			exit(EXIT_FAILURE);
 		}
 		if (pid == 0)
@@ -97,6 +104,9 @@ int main(int argc, char **argv, char **environ)
 			if (execve(Path_token, arguments, environ) == -1)
                         {
                         perror("execvp");
+			free(line_cpy);
+    			free(Path_token);
+    			free(Path_copy);
                         exit(EXIT_FAILURE);
                         }
 			
