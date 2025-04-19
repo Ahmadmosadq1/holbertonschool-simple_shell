@@ -106,8 +106,8 @@ int main(int argc, char **argv, char **environ)
 			wait(&status);
 			free(line_cpy);
 			free(Path_token);
+			free(Path_copy);
 		}
 	}
-	free(line);
 	return (0);
 }
