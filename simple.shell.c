@@ -3,7 +3,8 @@
 int main(int argc, char **argv, char **environ)
 {
 	char *line = NULL, *clean, *line_cpy = NULL, *arg_cpy = NULL;
-	char *Path_str, *Path_copy, *Path_token = NULL, *Path, *cmd, *token;
+	char *Path_str = NULL, *Path_copy = NULL, *Path_token = NULL;
+	char *Path = NULL, *cmd = NULL, *token = NULL;
 	char *arguments[MAX_ARGS];
 	pid_t pid;
 	int status, index;
@@ -39,52 +40,57 @@ int main(int argc, char **argv, char **environ)
 		}
 
 		cmd = strtok(arg_cpy, " ");
+		if (!cmd)
+		{
+			free(line_cpy);
+			free(arg_cpy);
+			continue;
+		}
 
-		/* Absolute or relative path */
+		/* Case 1: Absolute or relative path */
 		if (cmd[0] == '/' || cmd[0] == '.')
 		{
-			if (access(cmd, X_OK) != 0)
+			if (access(cmd, X_OK) == 0)
+				Path_token = strdup(cmd);
+			else
 			{
 				perror("command");
 				free(line_cpy);
 				free(arg_cpy);
 				continue;
 			}
-			Path_token = strdup(cmd);
 		}
 		else
 		{
 			Path_str = get_path(environ);
-			if (!Path_str || Path_str[0] == '\0')
+			if (Path_str && Path_str[0] != '\0')
 			{
-				perror("command");
-				free(line_cpy);
-				free(arg_cpy);
-				continue;
+				Path_copy = strdup(Path_str);
+				if (!Path_copy)
+				{
+					free(line_cpy);
+					free(arg_cpy);
+					continue;
+				}
+				Path = strtok(Path_copy, ":");
+				while (Path)
+				{
+					Path_token = malloc(strlen(Path) + strlen(cmd) + 2);
+					if (!Path_token)
+						break;
+					sprintf(Path_token, "%s/%s", Path, cmd);
+					if (access(Path_token, X_OK) == 0)
+						break;
+					free(Path_token);
+					Path_token = NULL;
+					Path = strtok(NULL, ":");
+				}
+				free(Path_copy);
 			}
-
-			Path_copy = strdup(Path_str);
-			if (!Path_copy)
+			if (!Path_token && access(cmd, X_OK) == 0)
 			{
-				free(line_cpy);
-				free(arg_cpy);
-				continue;
+				Path_token = strdup(cmd);
 			}
-
-			Path = strtok(Path_copy, ":");
-			while (Path)
-			{
-				Path_token = malloc(strlen(Path) + strlen(cmd) + 2);
-				if (!Path_token)
-					break;
-				sprintf(Path_token, "%s/%s", Path, cmd);
-				if (access(Path_token, X_OK) == 0)
-					break;
-				free(Path_token);
-				Path_token = NULL;
-				Path = strtok(NULL, ":");
-			}
-			free(Path_copy);
 			if (!Path_token)
 			{
 				perror("command");
@@ -133,3 +139,4 @@ int main(int argc, char **argv, char **environ)
 	free(line);
 	return (0);
 }
+
