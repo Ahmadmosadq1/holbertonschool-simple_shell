@@ -80,6 +80,8 @@ int main(int argc, char **argv, char **environ)
 		if (Path_token == NULL)
                          {
                                  perror("command :");
+				free(Path_copy);
+                                free(line_cpy);
                                  continue;
                          }
 		pid = fork();
