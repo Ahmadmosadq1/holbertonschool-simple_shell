@@ -57,6 +57,7 @@ int main(int argc, char **argv, char **environ)
 	if (!Path_str)
 	{
     	perror("PATH not found");
+	free(line_cpy);
     	exit(1);
 		}
 
@@ -75,6 +76,7 @@ int main(int argc, char **argv, char **environ)
 			sprintf(Path_token, "%s/%s", Path, line_cpy);
 			 if (access(Path_token, X_OK) == 0)
 				 break;
+			 free(Path_token);
 			 Path = strtok(NULL, ":");
 		}
 		if (Path_token == NULL)
@@ -82,6 +84,7 @@ int main(int argc, char **argv, char **environ)
                                  perror("command :");
 				free(Path_copy);
                                 free(line_cpy);
+				free(Path_token);
                                  continue;
                          }
 		pid = fork();
