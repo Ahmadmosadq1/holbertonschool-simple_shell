@@ -34,6 +34,7 @@ int main(int argc, char **argv, char **environ)
 		{
 			if (isatty(STDIN_FILENO))
 				printf("\n");
+			free(line);
 			break;
 		}
 		clean = trim_spaces(line);
@@ -84,10 +85,8 @@ int main(int argc, char **argv, char **environ)
 				token = strtok(NULL, " ");
 			}
 			arguments[index] = NULL;
-			printf("right token %s\n", Path_token);
 			if (execve(Path_token, arguments, environ) == -1)
                         {
-			printf("wrong token %s\n", Path_token);
                         perror("execvp");
                         exit(EXIT_FAILURE);
                         }
@@ -98,6 +97,7 @@ int main(int argc, char **argv, char **environ)
 			wait(&status);
 			free(line_cpy);
 			free(Path_token);
+			free(Path_str);
 		}
 	}
 	free(line);
