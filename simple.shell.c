@@ -7,7 +7,7 @@ int main(int argc, char **argv, char **environ)
 	char *Path = NULL, *cmd = NULL, *token = NULL;
 	char *arguments[MAX_ARGS];
 	pid_t pid;
-	int status, index;
+	int status, index, valid_cmd = 0;
 	size_t len = 0;
 	ssize_t user_input;
 
@@ -16,6 +16,7 @@ int main(int argc, char **argv, char **environ)
 
 	while (1)
 	{
+		valid_cmd = 0;
 		if (isatty(STDIN_FILENO))
 			printf("$ ");
 		user_input = getline(&line, &len, stdin);
@@ -47,17 +48,13 @@ int main(int argc, char **argv, char **environ)
 			continue;
 		}
 
-		/* Case 1: Absolute or relative path */
+		/* Absolute or relative path */
 		if (cmd[0] == '/' || cmd[0] == '.')
 		{
 			if (access(cmd, X_OK) == 0)
-				Path_token = strdup(cmd);
-			else
 			{
-				perror("command");
-				free(line_cpy);
-				free(arg_cpy);
-				continue;
+				Path_token = strdup(cmd);
+				valid_cmd = 1;
 			}
 		}
 		else
@@ -80,24 +77,29 @@ int main(int argc, char **argv, char **environ)
 						break;
 					sprintf(Path_token, "%s/%s", Path, cmd);
 					if (access(Path_token, X_OK) == 0)
+					{
+						valid_cmd = 1;
 						break;
+					}
 					free(Path_token);
 					Path_token = NULL;
 					Path = strtok(NULL, ":");
 				}
 				free(Path_copy);
 			}
-			if (!Path_token && access(cmd, X_OK) == 0)
+			if (!valid_cmd && access(cmd, X_OK) == 0)
 			{
 				Path_token = strdup(cmd);
+				valid_cmd = 1;
 			}
-			if (!Path_token)
-			{
-				perror("command");
-				free(line_cpy);
-				free(arg_cpy);
-				continue;
-			}
+		}
+
+		if (!valid_cmd)
+		{
+			perror("command");
+			free(line_cpy);
+			free(arg_cpy);
+			continue;
 		}
 
 		pid = fork();
@@ -119,7 +121,7 @@ int main(int argc, char **argv, char **environ)
 				token = strtok(NULL, " ");
 			}
 			arguments[index] = NULL;
-			if (execve(Path_token, arguments, environ) == -1)
+			if (execve(Path_token, arguments, environ ? environ : NULL) == -1)
 			{
 				perror("execve");
 				free(Path_token);
@@ -139,4 +141,3 @@ int main(int argc, char **argv, char **environ)
 	free(line);
 	return (0);
 }
-
