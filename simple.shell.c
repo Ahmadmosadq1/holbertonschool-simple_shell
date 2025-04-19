@@ -21,6 +21,7 @@ int main(int argc, char **argv, char **environ)
 	char *Path;
 	char *Path_token;
 	char *Path_str;
+	char *Path_copy;
 
 	(void)argc;
 	(void)argv;
@@ -48,9 +49,17 @@ int main(int argc, char **argv, char **environ)
 			free(line_cpy);
 			continue;
 		}
-		Path_str = strdup(getenv("PATH"));
+		Path_str = get_path(environ);
+
+	if (!Path_str)
+	{
+    	perror("PATH not found");
+    	exit(1);
+		}
+
+		Path_copy = strdup(Path_str);
 		Path_token = NULL;
-		Path = strtok(Path_str, ":");
+		Path = strtok(Path_copy, ":");
 		while (Path)
 		{
 			Path_token = malloc(strlen(Path) + strlen(line_cpy) + 2);
@@ -97,7 +106,6 @@ int main(int argc, char **argv, char **environ)
 			wait(&status);
 			free(line_cpy);
 			free(Path_token);
-			free(Path_str);
 		}
 	}
 	free(line);
