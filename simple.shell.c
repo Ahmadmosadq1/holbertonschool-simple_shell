@@ -9,7 +9,7 @@
 int main(int argc, char **argv, char **environ)
 {
 	int status;
-	int index = 0;
+	int index;
 	size_t len = 0;
 	ssize_t user_input;
 	char *line = NULL;
@@ -48,7 +48,7 @@ int main(int argc, char **argv, char **environ)
 			continue;
 		}
 		Path_str = getenv("PATH");
-		Path_token = strtok(Path_str, ":");
+		Path = strtok(Path_str, ":");
 		while (Path)
 		{
 			Path_token = malloc(strlen(Path) + strlen(line_cpy) + 2);
@@ -58,7 +58,8 @@ int main(int argc, char **argv, char **environ)
 			 if (access(Path_token, X_OK) == 0)
 				 break;
 			 free(Path_token);
-			 Path = strtok("NULL", ":");
+			 Path_token = NULL;
+			 Path = strtok(NULL, ":");
 		}
 		if (Path_token == NULL)
                          {
@@ -74,6 +75,8 @@ int main(int argc, char **argv, char **environ)
 		}
 		if (pid == 0)
 		{
+                        index = 0;
+			
 			token = strtok(line_cpy, " ");
 			while (token != NULL)
 			{
@@ -81,14 +84,18 @@ int main(int argc, char **argv, char **environ)
 				token = strtok(NULL, " ");
 			}
 			arguments[index] = NULL;
-			execve(Path_token, arguments, environ);
-			perror("execvp");
-			exit(EXIT_FAILURE);
+			if (execve(Path_token, arguments, environ) == -1)
+                        {
+                        perror("execvp");
+                        exit(EXIT_FAILURE);
+                        }
+			
 		}
 		if (pid > 0)
 		{
 			wait(&status);
 			free(line_cpy);
+			free(Path_token);
 		}
 	}
 	free(line);
