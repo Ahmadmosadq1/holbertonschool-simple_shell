@@ -47,7 +47,8 @@ int main(int argc, char **argv, char **environ)
 			free(line_cpy);
 			continue;
 		}
-		Path_str = getenv("PATH");
+		Path_str = strdup(getenv("PATH"));
+		Path_token = NULL;
 		Path = strtok(Path_str, ":");
 		while (Path)
 		{
@@ -57,14 +58,13 @@ int main(int argc, char **argv, char **environ)
 			sprintf(Path_token, "%s/%s", Path, line_cpy);
 			 if (access(Path_token, X_OK) == 0)
 				 break;
-			 free(Path_token);
-			 Path_token = NULL;
 			 Path = strtok(NULL, ":");
 		}
 		if (Path_token == NULL)
                          {
                                  perror("command :");
-                                 return (-1);
+				 free(line_cpy);
+                                 continue;
                          }
 		pid = fork();
 		if (pid == -1)
@@ -84,8 +84,10 @@ int main(int argc, char **argv, char **environ)
 				token = strtok(NULL, " ");
 			}
 			arguments[index] = NULL;
+			printf("right token %s\n", Path_token);
 			if (execve(Path_token, arguments, environ) == -1)
                         {
+			printf("wrong token %s\n", Path_token);
                         perror("execvp");
                         exit(EXIT_FAILURE);
                         }
