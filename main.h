@@ -1,3 +1,4 @@
+#define MAX_ARGS 64
 
 #ifndef SHELL_C
 #define SHELL_C

@@ -15,10 +15,12 @@ int main(int argc, char **argv, char **environ)
 	char *line = NULL;
 	pid_t pid;
 	char *line_cpy;
-	char *arguments[2];
+	char *arguments[MAX_ARGS];
 	char *clean;
 	char *token;
-	char *PATH;
+	char *Path;
+	char *Path_token;
+	char *Path_str;
 
 	(void)argc;
 	(void)argv;
@@ -45,18 +47,29 @@ int main(int argc, char **argv, char **environ)
 			free(line_cpy);
 			continue;
 		}
-		PATH_str = getevn("PATH");
-		PATH = strtok(PATH_str, ":");
-		if (access(PATH, X_OK) != 0)
+		Path_str = getenv("PATH");
+		Path_token = strtok(Path_str, ":");
+		while (Path)
 		{
-			perror("command: ");
-			return (-1);
+			Path_token = malloc(strlen(Path) + strlen(line_cpy) + 2);
+			if (Path_token == NULL)
+				return (-1);
+			sprintf(Path_token, "%s/%s", Path, line_cpy);
+			 if (access(Path_token, X_OK) == 0)
+				 break;
+			 free(Path_token);
+			 Path = strtok("NULL", ":");
 		}
+		if (Path_token == NULL)
+                         {
+                                 perror("command :");
+                                 return (-1);
+                         }
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork");
-			free(line_cpy);
+			free(Path_token);
 			exit(EXIT_FAILURE);
 		}
 		if (pid == 0)
@@ -65,10 +78,10 @@ int main(int argc, char **argv, char **environ)
 			while (token != NULL)
 			{
 				arguments[index++] = token;
-				oken = strtok(NULL, " ");
+				token = strtok(NULL, " ");
 			}
 			arguments[index] = NULL;
-			execve(PATH, arguments, environ);
+			execve(Path_token, arguments, environ);
 			perror("execvp");
 			exit(EXIT_FAILURE);
 		}
