@@ -41,12 +41,15 @@ int main(int argc, char **argv, char **environ)
 		clean = trim_spaces(line);
 		line_cpy = malloc(sizeof(char) * strlen(clean) + 1);
 		if (line_cpy == NULL)
-			return (-1);
+		{
+			exit(EXIT_FAILURE);
+		}
 		strncpy(line_cpy, clean, strlen(clean) + 1);
 		free(clean);
 		if (line_cpy[0] == '\0')
 		{
 			free(line_cpy);
+			free(line);
 			continue;
 		}
 		Path_str = get_path(environ);
@@ -54,8 +57,7 @@ int main(int argc, char **argv, char **environ)
 	if (!Path_str)
 	{
     	perror("PATH not found");
-	free(line_cpy);
-    	exit(1);
+    	exit(EXIT_FAILURE);
 		}
 	 
                         index = 0;
@@ -74,26 +76,23 @@ int main(int argc, char **argv, char **environ)
 			Path_token = malloc(strlen(Path) + strlen(arguments[0]) + 2);
 			if (Path_token == NULL)
 			{
-				free(line_cpy);
-				free(Path_str);
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			sprintf(Path_token, "%s/%s", Path, arguments[0]);
 			 if (access(Path_token, X_OK) == 0)
 				 break;
 			 Path = strtok(NULL, ":");
+			 free(Path_token);
 		}
 		if (Path_token == NULL)
                          {
                                  perror("command :");
-				 free(line_cpy);
                                  continue;
                          }
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork");
-			free(Path_token);
 			exit(EXIT_FAILURE);
 		}
 		if (pid == 0)
@@ -108,12 +107,8 @@ int main(int argc, char **argv, char **environ)
 		if (pid > 0)
 		{
 			wait(&status);
-			free(line_cpy);
-			free(Path_token);
-			free(line);
 		}
 	}
-	free(line);
 	return (0);
 }
 
