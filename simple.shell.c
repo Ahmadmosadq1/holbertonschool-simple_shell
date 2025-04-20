@@ -68,8 +68,7 @@ int main(int argc, char **argv, char **environ)
                         arguments[index] = NULL;
 		Path_copy = strdup(Path_str);
 		Path_token = NULL;
-		Path = strtok(Path_copy, ":");
-	 
+		Path = strtok(Path_copy, ":"); 
 		while (Path)
 		{
 			Path_token = malloc(strlen(Path) + strlen(arguments[0]) + 2);
@@ -77,7 +76,6 @@ int main(int argc, char **argv, char **environ)
 			{
 				free(line_cpy);
 				free(Path_str);
-				free(line);
 				exit(1);
 			}
 			sprintf(Path_token, "%s/%s", Path, arguments[0]);
