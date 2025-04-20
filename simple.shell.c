@@ -108,6 +108,11 @@ int main(int argc, char **argv, char **environ)
 				free(Path_copy);
 				Path_copy = NULL;
 					}
+				if (Path_token)
+				{
+					free(Path_token);
+					Path_token = NULL;
+				}
                                  perror("command :");
                                  continue;
                          }
@@ -117,13 +122,14 @@ int main(int argc, char **argv, char **environ)
 			free(line);
                                 free(line_cpy);
 				free(Path_copy);
+				free(Path_token);
 			perror("fork");
 			exit(EXIT_FAILURE);
 		}
 		if (pid == 0)
 		{
 			if (execve(Path_token, arguments, environ) == -1)
-                        {
+                        { 
 			
                         perror("execvp");
                         exit(EXIT_FAILURE);
@@ -131,9 +137,35 @@ int main(int argc, char **argv, char **environ)
 			
 		}
 		if (pid > 0)
+		{
 			wait(&status);
+		if (line)
+		{
+			free(line);
+			line = NULL;
+		}
+if (line_cpy)
+{ 
+	free(line_cpy);
+	line_cpy = NULL;
+}
+if (Path_copy) 
+{
+	free(Path_copy);
+	Path_copy = NULL;
+}
+if (Path_token) 
+{
+	free(Path_token);
+	Path_token = NULL;
+}
+
 	}
+}
 	free(line);
+        free(line_cpy);
+        free(Path_copy);
+        free(Path_token);
 	return (0);
 }
 
