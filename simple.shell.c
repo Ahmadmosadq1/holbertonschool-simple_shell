@@ -134,13 +134,17 @@ int main(int argc, char **argv, char **environ)
 		}
 		if (pid == 0)
 		{
-			if (execve(Path_token, arguments, environ) == -1)
+		/*	if (execve(Path_token, arguments, environ) == -1)
                         { 
 			
                         perror("execvp");
                         exit(EXIT_FAILURE);
-                        }
-			
+                        }*/
+			if (execve(Path_token, arguments, environ) == -1)
+{
+    fprintf(stderr, "./hsh: 1: %s: not found\n", arguments[0]);
+    exit(127);
+}
 		}
 		if (pid > 0)
 		{
