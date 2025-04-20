@@ -59,7 +59,6 @@ int main(int argc, char **argv, char **environ)
 	{
 	free(line);
 	free(line_cpy);
-	free(Path_str);
     	perror("PATH not found");
     	exit(EXIT_FAILURE);
 		}
@@ -81,23 +80,34 @@ int main(int argc, char **argv, char **environ)
 			if (Path_token == NULL)
 			{
 				free(line);
+				free(Path_copy);
 				free(line_cpy);
-				free(Path_str);
-				free(Path);
 				exit(EXIT_FAILURE);
 			}
 			sprintf(Path_token, "%s/%s", Path, arguments[0]);
 			 if (access(Path_token, X_OK) == 0)
 				 break;
-			 Path = strtok(NULL, ":");
-			 free(Path_token);
+			  free(Path_token);
+			  Path_token = NULL;
+    Path = strtok(NULL, ":");
 		}
 		if (Path_token == NULL)
                          {
-				 free(line);
-                                free(line_cpy);
-                                free(Path_str);
-                                free(Path);
+				if (line)
+				{
+					free(line);
+					line = NULL;
+				}
+				if (line_cpy)
+				{
+					free(line_cpy);
+					line_cpy = NULL;
+				}
+				if (Path_copy)
+					{
+				free(Path_copy);
+				Path_copy = NULL;
+					}
                                  perror("command :");
                                  continue;
                          }
@@ -106,9 +116,7 @@ int main(int argc, char **argv, char **environ)
 		{
 			free(line);
                                 free(line_cpy);
-                                free(Path_str);
-                                free(Path);
-				free(Path_token);
+				free(Path_copy);
 			perror("fork");
 			exit(EXIT_FAILURE);
 		}
@@ -116,26 +124,15 @@ int main(int argc, char **argv, char **environ)
 		{
 			if (execve(Path_token, arguments, environ) == -1)
                         {
-				free(line);
-                                free(line_cpy);
-                                free(Path_str);
-                                free(Path);
-				free(Path_token);
+			
                         perror("execvp");
                         exit(EXIT_FAILURE);
                         }
 			
 		}
 		if (pid > 0)
-		{
 			wait(&status);
-			free(line);
-                                free(line_cpy);
-                                free(Path_str);
-                                free(Path);
-                                free(Path_token);
-		}
-	}
+	}	
 	return (0);
 }
 
