@@ -36,7 +36,6 @@ int main(int argc, char **argv, char **environ)
 		{
 			if (isatty(STDIN_FILENO))
 				printf("\n");
-			free(line);
 			break;
 		}
 		clean = trim_spaces(line);
@@ -78,6 +77,7 @@ int main(int argc, char **argv, char **environ)
 			{
 				free(line_cpy);
 				free(Path_str);
+				free(line);
 				exit(1);
 			}
 			sprintf(Path_token, "%s/%s", Path, arguments[0]);
@@ -112,6 +112,7 @@ int main(int argc, char **argv, char **environ)
 			wait(&status);
 			free(line_cpy);
 			free(Path_token);
+			free(line);
 		}
 	}
 	free(line);
