@@ -42,6 +42,7 @@ int main(int argc, char **argv, char **environ)
 		line_cpy = malloc(sizeof(char) * strlen(clean) + 1);
 		if (line_cpy == NULL)
 		{
+			free(line);
 			exit(EXIT_FAILURE);
 		}
 		strncpy(line_cpy, clean, strlen(clean) + 1);
@@ -56,6 +57,9 @@ int main(int argc, char **argv, char **environ)
 
 	if (!Path_str)
 	{
+	free(line);
+	free(line_cpy);
+	free(Path_str);
     	perror("PATH not found");
     	exit(EXIT_FAILURE);
 		}
@@ -76,6 +80,10 @@ int main(int argc, char **argv, char **environ)
 			Path_token = malloc(strlen(Path) + strlen(arguments[0]) + 2);
 			if (Path_token == NULL)
 			{
+				free(line);
+				free(line_cpy);
+				free(Path_str);
+				free(Path);
 				exit(EXIT_FAILURE);
 			}
 			sprintf(Path_token, "%s/%s", Path, arguments[0]);
@@ -86,12 +94,21 @@ int main(int argc, char **argv, char **environ)
 		}
 		if (Path_token == NULL)
                          {
+				 free(line);
+                                free(line_cpy);
+                                free(Path_str);
+                                free(Path);
                                  perror("command :");
                                  continue;
                          }
 		pid = fork();
 		if (pid == -1)
 		{
+			free(line);
+                                free(line_cpy);
+                                free(Path_str);
+                                free(Path);
+				free(Path_token);
 			perror("fork");
 			exit(EXIT_FAILURE);
 		}
@@ -99,6 +116,11 @@ int main(int argc, char **argv, char **environ)
 		{
 			if (execve(Path_token, arguments, environ) == -1)
                         {
+				free(line);
+                                free(line_cpy);
+                                free(Path_str);
+                                free(Path);
+				free(Path_token);
                         perror("execvp");
                         exit(EXIT_FAILURE);
                         }
@@ -107,6 +129,11 @@ int main(int argc, char **argv, char **environ)
 		if (pid > 0)
 		{
 			wait(&status);
+			free(line);
+                                free(line_cpy);
+                                free(Path_str);
+                                free(Path);
+                                free(Path_token);
 		}
 	}
 	return (0);
