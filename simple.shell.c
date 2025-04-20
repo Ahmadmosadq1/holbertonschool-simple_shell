@@ -1,146 +1,117 @@
+
 #include "main.h"
+/**
+ * print_numbers - Entry point
+ * Description :prints number from 0 to 9 using _putchar
+ *.
+ * Return: void.
+ */
 
 int main(int argc, char **argv, char **environ)
 {
-	char *line = NULL, *clean, *line_cpy = NULL, *arg_cpy = NULL;
-	char *Path_str = NULL, *Path_copy = NULL, *Path_token = NULL;
-	char *Path = NULL, *cmd = NULL, *token = NULL;
-	char *arguments[MAX_ARGS];
-	pid_t pid;
-	int status, index, valid_cmd = 0;
+	int status;
+	int index;
 	size_t len = 0;
 	ssize_t user_input;
+	char *line = NULL;
+	pid_t pid;
+	char *line_cpy;
+	char *arguments[MAX_ARGS];
+	char *clean;
+	char *command_token;
+	char *Path;
+	char *Path_token;
+	char *Path_str;
+	char *Path_copy;
 
 	(void)argc;
 	(void)argv;
-
-	while (1)
+	while (1) /*making an infinte loop for our shell*/
 	{
-		valid_cmd = 0;
 		if (isatty(STDIN_FILENO))
-			printf("$ ");
+			printf("$ "); /*printing our prompt symbol1*/
+		/*reading command lines form the user*/
 		user_input = getline(&line, &len, stdin);
 		if (user_input == -1)
+		{
+			if (isatty(STDIN_FILENO))
+				printf("\n");
+			free(line);
 			break;
-
+		}
 		clean = trim_spaces(line);
-		if (!clean || clean[0] == '\0')
-		{
-			free(clean);
-			continue;
-		}
-
-		arg_cpy = strdup(clean);
-		line_cpy = strdup(clean);
+		line_cpy = malloc(sizeof(char) * strlen(clean) + 1);
+		if (line_cpy == NULL)
+			return (-1);
+		strncpy(line_cpy, clean, strlen(clean) + 1);
 		free(clean);
-		if (!line_cpy || !arg_cpy)
+		if (line_cpy[0] == '\0')
 		{
 			free(line_cpy);
-			free(arg_cpy);
 			continue;
 		}
+		Path_str = get_path(environ);
 
-		cmd = strtok(arg_cpy, " ");
-		if (!cmd)
-		{
-			free(line_cpy);
-			free(arg_cpy);
-			continue;
+	if (!Path_str)
+	{
+    	perror("PATH not found");
+	free(line_cpy);
+    	exit(1);
 		}
-
-		/* Absolute or relative path */
-		if (cmd[0] == '/' || cmd[0] == '.')
+	 
+                        index = 0;
+                        command_token = strtok(line_cpy, " ");
+                        while (command_token != NULL)
+                        {
+                                arguments[index++] = command_token;
+                                command_token = strtok(NULL, " ");
+                        }
+                        arguments[index] = NULL;
+		Path_copy = strdup(Path_str);
+		Path_token = NULL;
+		Path = strtok(Path_copy, ":");
+	 
+		while (Path)
 		{
-			if (access(cmd, X_OK) == 0)
+			Path_token = malloc(strlen(Path) + strlen(arguments[0]) + 2);
+			if (Path_token == NULL)
 			{
-				Path_token = strdup(cmd);
-				valid_cmd = 1;
+				free(line_cpy);
+				free(Path_str);
+				exit(1);
 			}
+			sprintf(Path_token, "%s/%s", Path, arguments[0]);
+			 if (access(Path_token, X_OK) == 0)
+				 break;
+			 Path = strtok(NULL, ":");
 		}
-		else
-		{
-			Path_str = get_path(environ);
-			if (Path_str && Path_str[0] != '\0')
-			{
-				Path_copy = strdup(Path_str);
-				if (!Path_copy)
-				{
-					free(line_cpy);
-					free(arg_cpy);
-					continue;
-				}
-				Path = strtok(Path_copy, ":");
-				while (Path)
-				{
-					if (Path[0] == '\0')
-					{
-						Path = strtok(NULL, ":");
-						continue;
-					}
-					Path_token = malloc(strlen(Path) + strlen(cmd) + 2);
-					if (!Path_token)
-						break;
-					sprintf(Path_token, "%s/%s", Path, cmd);
-					if (access(Path_token, X_OK) == 0)
-					{
-						valid_cmd = 1;
-						break;
-					}
-					free(Path_token);
-					Path_token = NULL;
-					Path = strtok(NULL, ":");
-				}
-				free(Path_copy);
-			}
-			if (!valid_cmd && access(cmd, X_OK) == 0)
-			{
-				Path_token = strdup(cmd);
-				valid_cmd = 1;
-			}
-		}
-
-		if (!valid_cmd)
-		{
-			perror("command");
-			free(line_cpy);
-			free(arg_cpy);
-			continue;
-		}
-
+		if (Path_token == NULL)
+                         {
+                                 perror("command :");
+				 free(line_cpy);
+                                 continue;
+                         }
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork");
 			free(Path_token);
-			free(line_cpy);
-			free(arg_cpy);
 			exit(EXIT_FAILURE);
 		}
 		if (pid == 0)
 		{
-			index = 0;
-			token = strtok(line_cpy, " ");
-			while (token)
-			{
-				arguments[index++] = token;
-				token = strtok(NULL, " ");
-			}
-			arguments[index] = NULL;
-			if (execve(Path_token, arguments, environ ? environ : NULL) == -1)
-			{
-				perror("execve");
-				free(Path_token);
-				free(line_cpy);
-				free(arg_cpy);
-				exit(EXIT_FAILURE);
-			}
+			if (execve(Path_token, arguments, environ) == -1)
+                        {
+                        perror("execvp");
+                        exit(EXIT_FAILURE);
+                        }
+			
 		}
-		else
+		if (pid > 0)
 		{
 			wait(&status);
-			free(Path_token);
 			free(line_cpy);
-			free(arg_cpy);
+			free(Path_token);
 		}
 	}
 	free(line);
