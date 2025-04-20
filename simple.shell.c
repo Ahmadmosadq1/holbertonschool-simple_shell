@@ -71,6 +71,12 @@ int main(int argc, char **argv, char **environ)
                                 command_token = strtok(NULL, " ");
                         }
                         arguments[index] = NULL;
+			if (strchr(arguments[0], '/') != NULL)
+{
+    execve(arguments[0], arguments, environ);
+    perror("execve");
+    exit(EXIT_FAILURE);
+}
 		Path_copy = strdup(Path_str);
 		Path_token = NULL;
 		Path = strtok(Path_copy, ":"); 
