@@ -132,7 +132,8 @@ int main(int argc, char **argv, char **environ)
 		}
 		if (pid > 0)
 			wait(&status);
-	}	
+	}
+	free(line);
 	return (0);
 }
 
