@@ -1,43 +1,52 @@
-.TH man 1 "16 Nov 2022" "0.1" "simple_shell man page"
-
+.TH man 1 "APR 15  2017" "1.0" "Holberton Simple Shell Project"
 .SH NAME
-.B simple_shell
-- Simple shell create in C to interact with a linux operating system.
-
+    hsh - Holberton Simple Shell: command line interpreter
+.PP
 .SH SYNOPSIS
- hsh [options] [file]
-
+.B hsh
+[command_string [arg...][file]]
+.PP
+.SH COPYRIGHT
+    Public Domain, no copyright protection
+.PP
 .SH DESCRIPTION
-Shell is a UNIX term for the interactive user interface with an operating system. The shell is the layer of programming that understands
-and executes the commands a user enters. In some systems, the shell is called a command interpreter. A shell usually implies an interface
-with a command syntax 
+.B hsh
+is a basic imitation of a command line interpreter that reads and implements basic commands from user input as a shell would.
+.PP
+.B hsh
+ is compiled on Ubuntu 14.04 LTS with gcc 4.8.4 (C90). It is built to run in both interactive and noninteractive mode.
+.PP
+.SH USER INPUT
+Once a user inputs a command and hits enter, the shell performs the following actions:
 
-.B Overview
+1. Splits the command into an array of words.
 
-The simple shell is a command that reads lines from either a file or the terminal, interprets them, and generally executes other commands. It is the program that is started when a user logs into the system. It incorporates many features to aid interactive use and has the advantage that the interpretative language is common to both interactive and non-interactive use (shell scripts). That is, commands can be typed directly to the running simple shell or can be put into a file, which can be executed directly by the simple shell.
-.SH Return Value
+2. Looks for the command.
 
-Always 0 for success, other number means failure.
-
-.SH PATH
-
-It will look inside al directions in PATH env variable for executable.
-
-.SH
-
-.SH OPTIONS
-.B simple_shell
-Command options will be typed after the main command followed by a space and a
- '-' symbol.
-
-.SH EXAMPLE
-
-[command] [options]
-$ ls -l
-
+3. Executes the command.
+.PP
+.SH SEARCH FOR COMMAND
+When locating a command, the shell looks for a built-in command by that name.
+If a built-in command is not found, the shell searches for the command in the PATH.
+.PP
+.SH EXECUTE COMMAND
+Commands are executed in a child process of the main process.
+.PP
+.SH BUILTINS
+.IP env
+Prints out all environment variables
+.IP exit
+Exits process and frees memory allocated.
+.PP
 .SH BUGS
-Single space required after argument.
-
-
-.SH AUTHOR
-FAHAD ALONAZI, IBRAHIM ALFALEH
+There are memory leaks when exiting the shell.
+This will be fixed in a later version of this shell.
+.PP
+.SH AUTHORS
+Saleh Alharbi   <10705@holbertonstudents.com>
+.br
+Ahmed Aljuhani  <10676@holbertonstudents.com>
+.PP
+.SH SEE ALSO
+.BR man
+.BR sh
