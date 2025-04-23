@@ -107,9 +107,7 @@ It is created using the **C programming language** and it mimics many functional
 You can try our shell by following these steps:
 > **Step 1:** Clone our repository using this command (you need to have git installed on your machine first):
 ````
-git clone https://github.com/Froot1/holbertonschool-simple_shell
-````
-> **Step 2:** Change directory to simple_shell:
+git clone https://github.com/Ahmadmosadq1/holbertonschool-simple_shell.git
 ````
 > **Step 2:** Change directory to simple_shell:
 ````
