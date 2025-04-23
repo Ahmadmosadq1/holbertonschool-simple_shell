@@ -173,3 +173,8 @@ $ exit
 root@0af34759cb774125854d542ce222dc6a-2377118072:/holbertonschool-simple_shell#
 
 ````
+## 👨‍💻 
+
+- **Saleh Alharbi**🌟  
+- **Ahmed Aljuhani**🚀
+
